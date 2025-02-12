@@ -1,20 +1,22 @@
 from datareading import data_reader
 from scaleheights import scale_height
 from altvar import altitude_var_g
+from scipy import constants as spc
 from matplotlib import pyplot as plt
+import numpy as np
 
 #I will calculate the scale height for molecular O, molecular N and atomic O at 120 and 600 km altitude
 
 #Approximated gravitational acceleration
 g_approx = 9.28 #m/s^2
 
-# #Atomic mass unit
-# atomic_mass_unit = spc.physical_constants['atomic mass constant'][0] #kg
+#Atomic mass unit
+atomic_mass_unit = spc.physical_constants['atomic mass constant'][0] #kg
 
-# #Defining the mass of each atom or molecule
-# atomic_O_mass_kg = 16 * atomic_mass_unit
-# molecular_O_mass_kg = 32 * atomic_mass_unit
-# molecular_N_mass_kg = 28 * atomic_mass_unit
+#Defining the mass of each atom or molecule. This is for individual scale heights
+atomic_O_mass_kg = 16 * atomic_mass_unit
+molecular_O_mass_kg = 32 * atomic_mass_unit
+molecular_N_mass_kg = 28 * atomic_mass_unit
 
 #reading the data file 
 data = data_reader('MSIS.dat')
@@ -61,6 +63,58 @@ ax.plot(scaleheigts_calculated_2, heights_in_km, linestyle = 'solid', label = r'
 ax.set_ylabel("Height (km)")
 ax.set_xlabel("Scale height (km)")
 ax.set_title("Scale height as a function of height")
+ax.grid(True)
+
+plt.legend()
+plt.show()
+
+#Calculating the scale height for each individual particle species using the appproximated g
+scale_H_N2_g_approx = scale_height(data['Temperature_neutral_K'], molecular_N_mass_kg, grav_acc = g_approx)
+scale_H_O_g_approx = scale_height(data['Temperature_neutral_K'], atomic_O_mass_kg, grav_acc = g_approx)
+scale_H_O2_g_approx = scale_height(data['Temperature_neutral_K'], molecular_O_mass_kg, grav_acc = g_approx)
+
+#Calculating the scale height for each individual particle species using the altitude varying g
+scale_H_N2_altvar = scale_height(data['Temperature_neutral_K'], molecular_N_mass_kg, grav_acc = grav_acc_var)
+scale_H_O_altvar = scale_height(data['Temperature_neutral_K'], atomic_O_mass_kg, grav_acc = grav_acc_var)
+scale_H_O2_altvar = scale_height(data['Temperature_neutral_K'], molecular_O_mass_kg, grav_acc = grav_acc_var)
+
+#Plotting for molecular nitrogen
+fig, ax = plt.subplots(figsize = (9, 7))
+ax.plot(scale_H_N2_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
+ax.plot(scale_H_N2_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
+
+#Plot aesthetics
+ax.set_ylabel("Height (km)")
+ax.set_xlabel("Scale height for N2 (km)")
+ax.set_title("Scale height for molecular nitrogen as a function of height")
+ax.grid(True)
+
+plt.legend()
+plt.show()
+
+#Plotting for molecular oxygen
+fig, ax = plt.subplots(figsize = (9, 7))
+ax.plot(scale_H_O2_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
+ax.plot(scale_H_O2_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
+
+#Plot aesthetics
+ax.set_ylabel("Height (km)")
+ax.set_xlabel("Scale height for O2 (km)")
+ax.set_title("Scale height for molecular oxygen as a function of height")
+ax.grid(True)
+
+plt.legend()
+plt.show()
+
+#Plotting for atomic oxygen
+fig, ax = plt.subplots(figsize = (9, 7))
+ax.plot(scale_H_O_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
+ax.plot(scale_H_O_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
+
+#Plot aesthetics
+ax.set_ylabel("Height (km)")
+ax.set_xlabel("Scale height for O (km)")
+ax.set_title("Scale height for atomic oxygen as a function of height")
 ax.grid(True)
 
 plt.legend()
