@@ -13,7 +13,7 @@ number_density = data['Oksygen-atoms_cm-3'].to_numpy() + data['Nitrogen-molecule
 + data['Oksygen-molecules_cm-3'].to_numpy()
 
 #Calculating the average particle mass using the mass density and number density, mass in grams
-avg_particle_mass = data['Mass_density_g_per_cm-3'].to_numpy() / number_density
+avg_particle_mass = data['Mass_density_g_per_cm3'].to_numpy() / number_density
 
 #Converting average particle mass to kilograms
 avg_particle_mass = avg_particle_mass * 10**(-3)

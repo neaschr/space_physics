@@ -8,7 +8,7 @@ def data_reader(datafile_name: str) -> pd.DataFrame:
         'Oksygen-atoms_cm-3',
         'Nitrogen-molecules_cm-3',
         'Oksygen-molecules_cm-3',
-        'Mass_density_g_per_cm-3',
+        'Mass_density_g_per_cm3',
         'Temperature_neutral_K'
     ]
 
