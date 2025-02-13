@@ -15,3 +15,13 @@ def scale_height(temperature: np.ndarray, particle_mass: np.ndarray, grav_acc=sp
     return scale_h
 
 #For 3 divide n for one species by dndz for that species, use numoy gradient
+
+def scale_height_experimental(number_density: np.ndarray) -> np.ndarray:
+    
+    #Finding the gradient of the number density (dn/dz)
+    number_dens_gradient = np.gradient(number_density)
+
+    #Finding the scale height
+    scale_H = - (number_density / number_dens_gradient)
+
+    return scale_H

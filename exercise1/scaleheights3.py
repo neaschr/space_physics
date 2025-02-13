@@ -31,8 +31,11 @@ avg_particle_mass = data['Mass_density_g_per_cm3'].to_numpy() / number_density
 #Converting average particle mass to kilograms
 avg_particle_mass = avg_particle_mass * 10**(-3)
 
+#Temperatures
+temperature_K = data['Temperature_neutral_K'].to_numpy()
+
 #Finding the scale height at 120 and 600 km of altitude using the approximated value of g = 9.28
-scaleheigts_calculated_1 = scale_height(temperature= data['Temperature_neutral_K'], particle_mass= avg_particle_mass, grav_acc= g_approx)
+scaleheigts_calculated_1 = scale_height(temperature= temperature_K, particle_mass= avg_particle_mass, grav_acc= g_approx)
 H_at_120km_1 = scaleheigts_calculated_1[120]
 H_at_600km_1 = scaleheigts_calculated_1[600]
 
@@ -40,7 +43,7 @@ H_at_600km_1 = scaleheigts_calculated_1[600]
 grav_acc_var = altitude_var_g(heigths= data['Height_km']*1000)
 
 #Using the altitude varying gravitational acceleration when calculating scale height
-scaleheigts_calculated_2 = scale_height(temperature= data['Temperature_neutral_K'], particle_mass= avg_particle_mass, grav_acc= grav_acc_var)
+scaleheigts_calculated_2 = scale_height(temperature= temperature_K, particle_mass= avg_particle_mass, grav_acc= grav_acc_var)
 H_at_120km_2 = scaleheigts_calculated_2[120]
 H_at_600km_2 = scaleheigts_calculated_2[600]
 
@@ -63,58 +66,6 @@ ax.plot(scaleheigts_calculated_2, heights_in_km, linestyle = 'solid', label = r'
 ax.set_ylabel("Height (km)")
 ax.set_xlabel("Scale height (km)")
 ax.set_title("Scale height as a function of height")
-ax.grid(True)
-
-plt.legend()
-plt.show()
-
-#Calculating the scale height for each individual particle species using the appproximated g
-scale_H_N2_g_approx = scale_height(data['Temperature_neutral_K'], molecular_N_mass_kg, grav_acc = g_approx)
-scale_H_O_g_approx = scale_height(data['Temperature_neutral_K'], atomic_O_mass_kg, grav_acc = g_approx)
-scale_H_O2_g_approx = scale_height(data['Temperature_neutral_K'], molecular_O_mass_kg, grav_acc = g_approx)
-
-#Calculating the scale height for each individual particle species using the altitude varying g
-scale_H_N2_altvar = scale_height(data['Temperature_neutral_K'], molecular_N_mass_kg, grav_acc = grav_acc_var)
-scale_H_O_altvar = scale_height(data['Temperature_neutral_K'], atomic_O_mass_kg, grav_acc = grav_acc_var)
-scale_H_O2_altvar = scale_height(data['Temperature_neutral_K'], molecular_O_mass_kg, grav_acc = grav_acc_var)
-
-#Plotting for molecular nitrogen
-fig, ax = plt.subplots(figsize = (9, 7))
-ax.plot(scale_H_N2_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
-ax.plot(scale_H_N2_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
-
-#Plot aesthetics
-ax.set_ylabel("Height (km)")
-ax.set_xlabel("Scale height for N2 (km)")
-ax.set_title("Scale height for molecular nitrogen as a function of height")
-ax.grid(True)
-
-plt.legend()
-plt.show()
-
-#Plotting for molecular oxygen
-fig, ax = plt.subplots(figsize = (9, 7))
-ax.plot(scale_H_O2_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
-ax.plot(scale_H_O2_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
-
-#Plot aesthetics
-ax.set_ylabel("Height (km)")
-ax.set_xlabel("Scale height for O2 (km)")
-ax.set_title("Scale height for molecular oxygen as a function of height")
-ax.grid(True)
-
-plt.legend()
-plt.show()
-
-#Plotting for atomic oxygen
-fig, ax = plt.subplots(figsize = (9, 7))
-ax.plot(scale_H_O_g_approx, heights_in_km, linestyle = 'dashed', label = r'$g = 9.28 ms^{-2}$')
-ax.plot(scale_H_O_altvar, heights_in_km, linestyle = 'solid', label = r'$g(z) = g(0) \frac{R_E^{2}}{(R_E + z)^2}$')
-
-#Plot aesthetics
-ax.set_ylabel("Height (km)")
-ax.set_xlabel("Scale height for O (km)")
-ax.set_title("Scale height for atomic oxygen as a function of height")
 ax.grid(True)
 
 plt.legend()
