@@ -1,11 +1,10 @@
 import numpy as np
-from scipy import constants as spc
 import matplotlib.pyplot as plt
 import datareader
 
 #We will make functions to find the optical depth as a function of altitude and wavelength
 
-def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: np.ndarray, number_densities: np.ndarray, heights: np.ndarray, planet_radius: float = 6378e3):
+def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: np.ndarray, number_densities: np.ndarray, heights: np.ndarray, planet_radius: float = 6378e3) -> float:
     
     '''
     Compute the optical depth using numerical integration.
@@ -19,7 +18,7 @@ def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: n
     - planet_radius (float): Planet radius in meters (default earth radius: 6378 km)
 
     Returns:
-    - np.ndarray: Optical depth for one wavelength
+    - float: Optical depth for one wavelength
     '''
     #Convert solar zenith angle to radians
     solar_zen_angle_rad = np.radians(solar_zenith_angle)
@@ -70,7 +69,12 @@ if __name__ == '__main__':
         'absorption cross section O2 [m^2]'
     ]
 
+    #Finding the absorption crossesctions
     absorp_crosssec_data = datareader.data_reader('phot_abs.dat', names_of_columns)
+    absorption_crosssecs = absorp_crosssec_data.iloc[:, 1:].to_numpy().T
+
+    #Finding the wavelengths
+    wavelengths = absorp_crosssec_data['wavelength [m]'].to_numpy()
 
     names_of_columns2 = [
         'Height_km',
@@ -92,9 +96,28 @@ if __name__ == '__main__':
     N_atom_oxy = N_atom_oxy * 1e6
     N_molec_oxy = N_molec_oxy * 1e6
     N_molec_nitro = N_molec_nitro * 1e6
+
+    #Having all species number densities as one array
+    N_all_species = number_densities = np.vstack([N_atom_oxy, N_molec_nitro, N_molec_oxy])
     
     #Defining array for the heights, given in unit meters
     height_in_meters = data['Height_km'].to_numpy() * 1e3
 
-    optical_depth_calculated = np.zeros(len(height_in_meters))
+    #Finding optical depth for each z_0 and wavelength
+    sol_zen_ang = 15
 
+    z_0_values = height_in_meters[100:]
+
+    optical_depth_matrix = np.array([
+        [optical_depth(z_0, sol_zen_ang, absorption_crosssecs[:, i], N_all_species, height_in_meters) for i in range(len(wavelengths))]
+        for z_0 in z_0_values
+    ])
+    
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.contourf(wavelengths * 1e9, z_0_values / 1e3, optical_depth_matrix, cmap='inferno')
+    plt.colorbar(label='Optical Depth')
+    plt.xlabel('Wavelength (nm)')
+    plt.ylabel('Altitude (km)')
+    plt.title(f'Optical Depth with $\\chi = {sol_zen_ang}^\\circ$')
+    plt.show()
