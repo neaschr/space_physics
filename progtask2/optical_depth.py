@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import datareader
+import matplotlib.colors as mcolors
 
 #We will make functions to find the optical depth as a function of altitude and wavelength
 
-def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: np.ndarray, number_densities: np.ndarray, heights: np.ndarray, planet_radius: float = 6378e3) -> float:
+def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: np.ndarray, 
+                  number_densities: np.ndarray, heights: np.ndarray, planet_radius: float = 6378e3) -> float:
     
     '''
     Compute the optical depth using numerical integration.
@@ -102,22 +104,28 @@ if __name__ == '__main__':
     
     #Defining array for the heights, given in unit meters
     height_in_meters = data['Height_km'].to_numpy() * 1e3
-
-    #Finding optical depth for each z_0 and wavelength
-    sol_zen_ang = 15
-
     z_0_values = height_in_meters[100:]
 
-    optical_depth_matrix = np.array([
-        [optical_depth(z_0, sol_zen_ang, absorption_crosssecs[:, i], N_all_species, height_in_meters) for i in range(len(wavelengths))]
-        for z_0 in z_0_values
-    ])
+    #Making an array containing the different solar zenith angles we want to use
+    sol_zen_ang = np.arange(0, 76, 15)
+    sol_zen_ang = np.append(sol_zen_ang, 85)
     
-    # Plotting
-    plt.figure(figsize=(10, 6))
-    plt.contourf(wavelengths * 1e9, z_0_values / 1e3, optical_depth_matrix, cmap='inferno')
-    plt.colorbar(label='Optical Depth')
-    plt.xlabel('Wavelength (nm)')
-    plt.ylabel('Altitude (km)')
-    plt.title(f'Optical Depth with $\\chi = {sol_zen_ang}^\\circ$')
-    plt.show()
+    #Looping over the angles and plotting
+    for angle in sol_zen_ang:
+
+        #Finding optical depth for each z_0 and wavelength
+        optical_depth_matrix = np.array([
+        [optical_depth(z_0, angle, absorption_crosssecs[:, i], N_all_species, height_in_meters) for i in range(len(wavelengths))]
+        for z_0 in z_0_values])
+
+        #Use LogNorm for logarithmic color scaling
+        norm = mcolors.LogNorm(vmin=0.01, vmax= 10**4) 
+
+        #Plotting
+        plt.figure(figsize=(10, 6))
+        plt.pcolormesh(wavelengths * 1e9, z_0_values / 1e3, optical_depth_matrix, cmap='inferno', norm=norm)
+        plt.colorbar(label='Optical Depth')
+        plt.xlabel('Wavelength (nm)')
+        plt.ylabel('Altitude (km)')
+        plt.title(f'Optical Depth with $\\chi = {angle}^\\circ$')
+        plt.show()
