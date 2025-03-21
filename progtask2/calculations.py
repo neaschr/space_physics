@@ -4,6 +4,7 @@ import matplotlib.colors as mcolors
 import datareader
 from optical_depth import optical_depth
 from euvflux import EUV_flux
+from irradiance import irradiance_at_wavelength
 
 if __name__ == '__main__':
 
@@ -74,10 +75,19 @@ if __name__ == '__main__':
         plt.title(f'Optical Depth with $\\chi = {angle}^\\circ$')
         plt.show()
 
-        #Finding the flux
+        #Defining column names and reading data
+        colums = ['Time (yyyyDDD)', 'Wavelength (nm)', 'Irradiance (W/m^2/nm)', 'Uncertainty']
+        irr_data = datareader.data_reader2(datafile_name = 'fism_daily_hr19990216.dat', column_names = colums)
+        
+        #Finding the data for wavelength and for irradiance. Converting to SI units
+        wavelengths_m = irr_data['Wavelength (nm)'].to_numpy() * 1e9
+        irradiances = irr_data['Irradiance (W/m^2/nm)'].to_numpy() * 1e9
+
+        #Finding the flux, using both EUV_flux function and irradiance_at_wavelength function
         photon_flux_matrix = np.array([
-            [EUV_flux(z_0, angle, absorption_crosssecs[:, i], N_all_species, height_in_meters) for i in range(len(wavelengths))]
-        for z_0 in z_0_values])
+            [EUV_flux(z_0, angle, absorption_crosssecs[:, i], N_all_species, height_in_meters, 
+                      irradiance_at_wavelength(wavelengths[i], wavelengths_m, irradiances), 
+                      wavelengths[i]) for i in range(len(wavelengths))] for z_0 in z_0_values])
 
         #Plotting
         plt.figure(figsize=(10, 6))

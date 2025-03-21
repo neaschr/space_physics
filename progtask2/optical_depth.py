@@ -6,18 +6,20 @@ def optical_depth(z_0: float, solar_zenith_angle: float, absorption_crosssecs: n
                   number_densities: np.ndarray, heights: np.ndarray, planet_radius: float = 6378e3) -> float:
     
     '''
-    Compute the optical depth using numerical integration.
+    Computes the optical depth using numerical integration.
+
+    This function uses trapezoidal integration to calculate optical depth at a given altitude
 
     Parameters:
-    - z_0 (float): Starting altitude (in meters)
-    - solar_zenith_angle (float): Solar zenith angle (in degrees)
-    - absorption_crosssecs (np.ndarray): Absorption cross-section for each particle species 
-    - number_densities (np.ndarray): Number densities by height for each particle species (in m-3)
-    - heights (np.ndarray): Heights corresponding to the number densities (in meters)
-    - planet_radius (float): Planet radius in meters (default earth radius: 6378 km)
+        z_0 (float): Starting altitude (in meters)
+        solar_zenith_angle (float): Solar zenith angle (in degrees)
+        absorption_crosssecs (np.ndarray): Absorption cross-section for each particle species 
+        number_densities (np.ndarray): Number densities by height for each particle species (in m-3)
+        heights (np.ndarray): Heights corresponding to the number densities (in meters)
+        planet_radius (float): Planet radius in meters (default earth radius: 6378 km)
 
     Returns:
-    - float: Optical depth for one wavelength
+        opt_depth (float): Optical depth for one wavelength
     '''
     #Convert solar zenith angle to radians
     solar_zen_angle_rad = np.radians(solar_zenith_angle)
