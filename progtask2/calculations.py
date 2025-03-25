@@ -67,12 +67,13 @@ if __name__ == '__main__':
         norm = mcolors.LogNorm(vmin=0.01, vmax= 10**4) 
 
         #Plotting
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 5))
         plt.pcolormesh(wavelengths * 1e9, z_0_values / 1e3, optical_depth_matrix, cmap='inferno', norm=norm)
         plt.colorbar(label='Optical Depth')
         plt.xlabel('Wavelength (nm)')
         plt.ylabel('Altitude (km)')
         plt.title(f'Optical Depth with $\\chi = {angle}^\\circ$')
+        plt.savefig(f'optdepthchi{angle}')
         plt.show()
 
         #Defining column names and reading data
@@ -90,11 +91,12 @@ if __name__ == '__main__':
                       wavelengths[i]) for i in range(len(wavelengths))] for z_0 in z_0_values])
 
         #Plotting
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 5))
         plt.pcolormesh(wavelengths * 1e9, z_0_values / 1e3, photon_flux_matrix, cmap='inferno')
         plt.colorbar(label='Photon flux')
         plt.xlabel('Wavelength (nm)')
         plt.ylabel('Altitude (km)')
         plt.title(f'Solar EUV-flux with $\\chi = {angle}^\\circ$')
+        plt.savefig(f'euvchi{angle}')
         plt.show()        
         
